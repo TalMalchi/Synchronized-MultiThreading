@@ -1,29 +1,48 @@
 #include <iostream>
-#include <stack>
-#include <mutex>
-
 using namespace std;
 
 
-
-template <typename T> class MyThreadSafeStack {
+//stack class implementation linked list
+template <typename T> class stack {
   public:
+    stack() {
+      m_head = NULL;
+    }
+    ~stack() {
+      while(m_head != NULL) {
+        node *temp = m_head;
+        m_head = m_head->m_next;
+        delete temp;
+      }
+    }
     void push(const T& item) {
-      lock_guard<mutex> lock(m_mutex);
-      m_stack.push(item);
+        cout << " inside push-stack" << endl;
+      node *temp = new node;
+      temp->m_data = item;
+      temp->m_next = m_head;
+      m_head = temp;
     }
     void pop() {
-      lock_guard<mutex> lock(m_mutex);
-      m_stack.pop();
-    }
-    T top() const { // note that we shouldn't return a reference,
-                    // because another thread might pop() this
-                    // object in the meanwhile
-      lock_guard<mutex> lock(m_mutex);
-      return m_stack.top();
-    }
+        cout << " inside pop-stack" << endl;
 
+      if(m_head != NULL) {
+        node *temp = m_head;
+        m_head = m_head->m_next;
+        delete temp;
+      }
+    }
+    T top() const {
+      return m_head->m_data;
+    }
+    bool empty() const {
+      return m_head == NULL;
+    }
   private:
-    mutable std::mutex m_mutex;
-    std::stack<T> m_stack;
+    struct node {
+      T m_data;
+      node *m_next;
+    };
+    node *m_head;
 };
+
+
