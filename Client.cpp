@@ -84,26 +84,64 @@ int main(int argc, char *argv[])
 
 
     // send message to server
-    while (true)
+	char buffer[1024];
+    string userInput;
+	string cmd;
+
+    do
     {
-        char buf[4096];
-        string userInput;
-         getline(cin, userInput);
-          int sendRes = send(sockfd, userInput.c_str(), userInput.size() + 1, 0);
+		//cin >> userInput;
+        getline(cin, userInput);
+		cmd= userInput.substr(0, userInput.find_first_of(" "));
+		
+		if(cmd== "PUSH"){
+          	int sendRes = send(sockfd, userInput.c_str(), userInput.size() + 1, 0);
+		  	printf("UserINPUT '%s'\n" ,userInput.c_str());
+                if (sendRes == -1)
+                {
+                    cout << "Could not send to server! Whoops!\r\n";
+                    continue;
+                }}
+		if(cmd== "POP"){
+          	int sendRes = send(sockfd, userInput.c_str(), userInput.size() + 1, 0);
+		  	printf("UserINPUT '%s'\n" ,userInput.c_str());
+                if (sendRes == -1)
+                {
+                    cout << "Could not send to server! Whoops!\r\n";
+                    continue;
+                }}
+		if(cmd== "TOP"){
+	
+          	int sendRes = send(sockfd, userInput.c_str(), userInput.size() + 1, 0);
+		  	printf("UserINPUT '%s'\n" ,userInput.c_str());
                 if (sendRes == -1)
                 {
                     cout << "Could not send to server! Whoops!\r\n";
                     continue;
                 }
                  //server response-TOP function
-                memset(buf, 0, 4096);
-                int bytesReceived = recv(sockfd, buf, 4096, 0);
-                if (bytesReceived == -1)
-                {
-                    cout << "no response from the server!\r\n";
-                }
+               
+
+				try {
+					//sleep(10);
+					memset(buffer,0,1024);
+					cout << "Try to recieve TOP_MSG from server" << endl;
+					if ((numbytes = recv(sockfd, buffer, sizeof(buffer), 0)) == -1) {
+					cout << "fail in recieve" << endl;
+					perror("recv");
+					exit(1);
+							}
+							printf("Server: TOP_MSG: '%s'\n",buffer);
+							printf("OUTPUT:prefix. '%s'\n",buffer);
+					}
+				catch(exception& e){
+					cout<<"exception: didnt recieve msg"<<endl;
+	}
+		}
         
     }
+	while (true);
+	
     
 
 	// if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {

@@ -22,6 +22,11 @@ using namespace std;
 
 #define BACKLOG 10	 // how many pending connections queue will hold
 
+stack <string> ss;
+	pthread_mutex_t mutex;
+	int numbytes;
+	
+
 void sigchld_handler(int s)
 {
 	(void)s; // quiet unused variable warning
@@ -46,31 +51,119 @@ void *get_in_addr(struct sockaddr *sa)
 }
 
 void *send_function(void *ptr){
+		char buffer[1024];
     
         // int sockfd= malloc(sizeof(((int*)ptr)));   
         int sockfd = *((int*)ptr);  
-        if(send(sockfd, "Hello, world!", 13, 0) == -1){
-                printf("im here\n");
-                perror("send");
-                exit(1);
+        // if(send(sockfd, "Hello, world!", 13, 0) == -1){
+        //         printf("im here\n");
+        //         perror("send");
+        //         exit(1);
+        // }
+
+	string line, cmd, data;
+	while(true){
+		try{
+		//sleep(10);
+		memset(buffer,0,1024);
+        if ((numbytes = recv(sockfd, buffer, sizeof(buffer), 0)) == -1) {
+	    cout << "fail in recieve" << endl;
+		perror("recv");
+	    exit(1);
+		
+	}
+
+	buffer[numbytes] = '\0';
+
+	printf("Server: received '%s'\n",buffer);
+	
+	line = buffer;
+	cmd= line.substr(0, line.find_first_of(" "));
+
+	if (cmd.size() < line.size())
+        {
+            // rest line is data from the user
+            data = line.substr(line.find_first_of(" ") + 1);
         }
+	//memcpy((void*)cmd, buf, strlen(buf));
+	if (cmd== "PUSH")
+	{
+
+		pthread_mutex_lock(&mutex);
+		cout<< "Data to Push: " << data <<endl;
+		cout<< "Inside Push Server.cpp"<<endl;
+		ss.push(data);
+		pthread_mutex_unlock(&mutex);
+
+		
+	}
+	else if (cmd== "POP"){
+		pthread_mutex_lock(&mutex);
+		cout<< "Inside Pop Server.cpp"<<endl;
+		if(ss.empty()){
+			cout<< "Error- Stack is empty!"<<endl;
+			continue;
+		}
+		ss.pop();
+		pthread_mutex_unlock(&mutex);
+
+	}
+	else if (cmd== "TOP"){
+		string empty_msg= "Error- Stack is empty!" ;
+		pthread_mutex_lock(&mutex);
+		cout<< "Inside Top Server.cpp"<<endl;
+		if(ss.empty()){
+			cout<< empty_msg <<endl;
+			try{
+			if(send(sockfd, empty_msg.c_str(), empty_msg.size()+1, 0) == -1){        
+					perror("send");
+					exit(1);
+			}
+			printf("send-Empty-MSG-to-Client\n");
+			pthread_mutex_unlock(&mutex);
+		}
+		catch(exception& e){
+			cout<<"exception: Can't send message to Client" << endl;
+			
+		}
+		continue;
+		}
+		string top_msg;
+		top_msg= ss.top();	
+		printf("TOP_MSG: '%s'\n" ,top_msg.c_str());	
+		try{
+			if(send(sockfd, top_msg.c_str(), top_msg.size()+1, 0) == -1){        
+					perror("send");
+					exit(1);
+			}
+			printf("send-top-to-client\n");
+			pthread_mutex_unlock(&mutex);
+		}
+		catch(exception& e){
+			cout<<"exception: Can't send message to Client" << endl;
+	}
+	}
+	}
+	catch(exception& e){
+		cout<<"exception: didnt recieve msg"<<endl;
+	}
         //close(sockfd) ;     
-}
+	
+}}
 
 int main(void)
 {
-	int sockfd, new_fd, numbytes;  // listen on sock_fd, new connection on new_fd
+	int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
 	struct addrinfo hints, *servinfo, *p;
 	struct sockaddr_storage their_addr; // connector's address information
 	socklen_t sin_size;
 	struct sigaction sa;
 	int yes=1;
-    char buf[MAXDATASIZE];
+    
 	char s[INET6_ADDRSTRLEN];
 	int rv;
     //stack_mutex <string> check;
-	stack <string> ss;
-	pthread_mutex_t mutex;
+	
 
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_UNSPEC;
@@ -139,47 +232,7 @@ int main(void)
 			get_in_addr((struct sockaddr *)&their_addr),
 			s, sizeof s);
 		printf("server: got connection from %s\n", s);
-	while(1){
-        if ((numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0)) == -1) {
-	    perror("recv");
-	    exit(1);
-	}
-
-	buf[numbytes] = '\0';
-
-	printf("Server: received '%s'\n",buf);
-	string cmd;
-	cmd = buf;
-	//memcpy((void*)cmd, buf, strlen(buf));
-	if (cmd== "PUSH")
-	{
-		pthread_mutex_lock(&mutex);
-		cout<< "inside push"<<endl;
-		ss.push("hi");
-		pthread_mutex_unlock(&mutex);
-
-		
-	}
-	else if (cmd== "POP"){
-		pthread_mutex_lock(&mutex);
-		cout<< "inside pop"<<endl;
-		ss.pop();
-		pthread_mutex_unlock(&mutex);
-
-	}
-	else if (cmd== "TOP"){
-		pthread_mutex_lock(&mutex);
-		cout<< "inside top"<<endl;
-		string top_msg;
-		top_msg= ss.top();
-		pthread_mutex_unlock(&mutex);
-		if(send(sockfd, top_msg.c_str(), top_msg.length(), 0) == -1){
-                printf("send-top-to-client\n");
-                perror("send");
-                exit(1);
-        }
-
-	}
+	
 	
 
 
@@ -192,12 +245,11 @@ int main(void)
 		// 	close(new_fd);
 		// 	exit(0);
 		// }
-		 //pthread_t thread;
-       //pthread_create(&thread, NULL,send_function, (void *)&new_fd);
+		 pthread_t thread;
+       pthread_create(&thread, NULL,send_function, (void *)&new_fd);
 
 		//close(new_fd);  // parent doesn't need this
-	}
-	}
-
-	return 0;
+		
+}
+return 0;
 }
