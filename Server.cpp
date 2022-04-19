@@ -40,6 +40,8 @@ void sigchld_handler(int s)
 }
 
 
+
+
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
 {
@@ -54,7 +56,9 @@ void *send_function(void *ptr){
 		char buffer[1024];
     
         // int sockfd= malloc(sizeof(((int*)ptr)));   
-        int sockfd = *((int*)ptr);  
+        int sockfd = *((int*)ptr);
+
+
         // if(send(sockfd, "Hello, world!", 13, 0) == -1){
         //         printf("im here\n");
         //         perror("send");
@@ -71,12 +75,12 @@ void *send_function(void *ptr){
 		perror("recv");
 	    exit(1);
 		
-	}
+	
 
 	buffer[numbytes] = '\0';
 
 	printf("Server: received '%s'\n",buffer);
-	
+		}	
 	line = buffer;
 	cmd= line.substr(0, line.find_first_of(" "));
 
@@ -86,6 +90,7 @@ void *send_function(void *ptr){
             data = line.substr(line.find_first_of(" ") + 1);
         }
 	//memcpy((void*)cmd, buf, strlen(buf));
+		
 	if (cmd== "PUSH")
 	{
 
@@ -245,7 +250,8 @@ int main(void)
 		// 	close(new_fd);
 		// 	exit(0);
 		// }
-		 pthread_t thread;
+		//signal(SIGINT,siginit_handler);
+		pthread_t thread;
        pthread_create(&thread, NULL,send_function, (void *)&new_fd);
 
 		//close(new_fd);  // parent doesn't need this

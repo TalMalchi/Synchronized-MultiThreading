@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 using namespace std;
 
 
@@ -6,43 +7,56 @@ using namespace std;
 template <typename T> class stack {
   public:
     stack() {
-      m_head = NULL;
+      node *check= (node *)malloc(sizeof(node));  
+      if (check==NULL)
+      {
+       cout << "Null pointer has been returned" << endl;
+      }
+      
+      head = NULL;
     }
     ~stack() {
-      while(m_head != NULL) {
-        node *temp = m_head;
-        m_head = m_head->m_next;
+      while(head != NULL) {
+        node *temp = head;
+        head = head->next;
         delete temp;
       }
     }
-    void push(const T& item) {
-        cout << " inside push-stack" << endl;
+    void push(const T& new_data) {
+      node *check= (node*)malloc(sizeof(node));
+      
+      if (check==NULL)
+      {
+       cout << "Null pointer has been returned" << endl;
+      }
+      
+      cout << " inside push-stack" << endl;
       node *temp = new node;
-      temp->m_data = item;
-      temp->m_next = m_head;
-      m_head = temp;
+      temp->data = new_data;
+      temp->next = head;
+      head = temp;
     }
     void pop() {
         cout << " inside pop-stack" << endl;
-
-      if(m_head != NULL) {
-        node *temp = m_head;
-        m_head = m_head->m_next;
-        delete temp;
+      if(head != NULL) {
+        node *temp = head;
+        head = head->next;
+        //delete temp;
+        free(temp);
       }
     }
     T top() const {
-      return m_head->m_data;
+      return head->data;
     }
     bool empty() const {
-      return m_head == NULL;
+      return head == NULL;
     }
   private:
     struct node {
-      T m_data;
-      node *m_next;
+      T data;
+      node *next;
     };
-    node *m_head;
+    node *head;
 };
 
 
