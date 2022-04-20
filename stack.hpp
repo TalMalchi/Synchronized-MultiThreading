@@ -11,7 +11,7 @@ using namespace std;
 //stack class implementation linked list
 template <typename T> class stack {
   // private:
-    typedef struct node {
+    struct node {
       T data;
       size_t size;
       bool is_free;
