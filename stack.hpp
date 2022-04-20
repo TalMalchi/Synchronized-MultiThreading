@@ -71,7 +71,7 @@ template <typename T> class stack {
         node *temp = head;
         head = head->next;
         //delete temp;
-        free(temp);
+        my_free((void*)temp);
       }
     }
     T top() const {
@@ -107,7 +107,7 @@ template <typename T> class stack {
     }
 
       void * my_malloc(unsigned long size){
-        cout <<"Amen"<<endl;
+        
         void *memory_block;
         node *header;
         pthread_mutex_lock(&lock);
@@ -128,11 +128,82 @@ template <typename T> class stack {
         return (void*)(header + 1);
       }
         
-      
     
+
+ 
+
+void my_free(void *ptr)
+
+{
+    node *new_node;
+    void *new_brk;
+
+ 
+
+    if (!ptr)
+
+        return;
+
+    pthread_mutex_lock(&lock);
+
+    new_node = (node*)ptr - 1;
+
+    new_brk = sbrk(0);
+
+    if ((char*)ptr + new_node->size == new_brk) {
+
+        if (start == end1) {
+
+            start = NULL;
+
+            end1 = NULL;
+
+        } else {
+
+            delete_pointers();
+
+        }
+
+        sbrk((0 - sizeof(node) - new_node->size));
+
+    } else {
+
+        new_node->is_free = true;
+
+    }
+
+    pthread_mutex_unlock(&lock);
+
+}   
+    
+
+void delete_pointers(void)
+
+{
+
+    node *buff = start;
+
+ 
+
+    while (buff) {
+
+        if (buff->next == end1) {
+
+            buff->next = NULL;
+
+            end1 = buff;
+
+        }
+
+        buff = buff->next;
+
+    }
+}
+
 
 
 
  
 };
+
 
