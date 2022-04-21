@@ -68,16 +68,28 @@ template <typename T> class stack {
 
     // this function pops the data from the stack
     void pop() {
+<<<<<<< Updated upstream
         cout << " inside pop-stack" << endl; //self-checking
+=======
+      //if(!empty()){
+        cout << " inside pop-stack" << endl;
+>>>>>>> Stashed changes
       if(head != NULL) {
         node *temp = head; // create a new node
         head = head->next; // assign the next node to the head node
         //delete temp;
+<<<<<<< Updated upstream
         my_free((void*)temp); // free the memory of the node using my_free function
       }
     }
 
     // this function returns the top element of the stack
+=======
+        my_free((void*)temp);
+      }}
+  
+    //}
+>>>>>>> Stashed changes
     T top() const {
       return head->data;
     }

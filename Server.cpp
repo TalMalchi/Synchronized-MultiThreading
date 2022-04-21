@@ -105,11 +105,13 @@ void *send_function(void *ptr){
 	else if (cmd== "POP"){
 		pthread_mutex_lock(&mutex);
 		cout<< "Inside Pop Server.cpp"<<endl;
-		if(ss.empty()){
-			cout<< "Error- Stack is empty!"<<endl;
-			continue;
+		if(!ss.empty()){
+			ss.pop();
 		}
-		ss.pop();
+		else if(ss.empty()){
+			cout<< "Error- Stack is empty!"<<endl;
+			//break;
+		}
 		pthread_mutex_unlock(&mutex);
 
 	}
