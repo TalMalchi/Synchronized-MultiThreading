@@ -27,7 +27,7 @@ In our server class we use most of our code from Ex3 and made the necessary chan
 adjust our code to this assigment.
 First of all, in this class we created our server socket using all the known commends (create socket ,bind , listen and accept)
 and when the client ask from the server an action, the server do it job depands on the key words which stack have (PUSH, POP, TOP).
-Each one of the commands are surrounded by pthread mutex lock // and unlock on the cretical section ( נראלי אפשר להוסיף את זה ולהוריד את מה שיש עד הפסיק) // and unlock at the beggining and at the end of the function we unlock it, in aim to prevent a
+Each one of the commands are surrounded by pthread mutex lock and unlock on the cretical section, in aim to prevent a
 case which more than one client trying to reach to the same function.
 
 ## Explanation about the Client class:
