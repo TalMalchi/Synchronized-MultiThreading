@@ -75,10 +75,7 @@ void *send_function(void *ptr){
 		perror("recv");
 	    exit(1);
 		
-	
-
 	buffer[numbytes] = '\0';
-
 	printf("Server: received '%s'\n",buffer);
 		}	
 	line = buffer;
@@ -133,8 +130,8 @@ void *send_function(void *ptr){
 			cout<<"exception: Can't send message to Client" << endl;
 			
 		}
-		continue;
 		}
+		else if(!ss.empty()){
 		string top_msg;
 		top_msg= ss.top();	
 		printf("TOP_MSG: '%s'\n" ,top_msg.c_str());	
@@ -151,12 +148,14 @@ void *send_function(void *ptr){
 	}
 	}
 	}
+	}
 	catch(exception& e){
 		cout<<"exception: didnt recieve msg"<<endl;
 	}
         //close(sockfd) ;     
 	
-}}
+}
+}
 
 int main(void)
 {
