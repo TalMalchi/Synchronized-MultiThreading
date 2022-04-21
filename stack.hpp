@@ -155,7 +155,6 @@ public:
   // this function allocate memory for number of nodes using my_malloc function
   void *my_calloc(int number, unsigned long size)
   {
-    cout << "Amen Calloc" << endl;
     return (my_malloc(number * size));
   }
 

@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
 					exit(1);
 				}
 				printf("Server: TOP_MSG: '%s'\n", buffer);
-				printf("OUTPUT:prefix. '%s'\n", buffer);
+				printf("OUTPUT: '%s'\n", buffer);
 			}
 			catch (exception &e)
 			{
