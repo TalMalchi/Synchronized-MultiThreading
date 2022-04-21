@@ -44,8 +44,10 @@ If the commend is PUSH so the client also send the string he wants to add.
 ## Explanation about the Stack class:
 
 //We built node struct in order to implement our Stack Class.  
-These struct containf 4 field:////////// נראלי להוסיף את זה 
-In our node stuct the are 4 fields:
+These struct containf 4 field://////////         נראלי להוסיף את זה 
+     
+     
+   In our node stuct the are 4 fields:
 * T data - which store the data inside the node
 * size_t size - which store the size of our node
 * bool is_free - a boolean variable that check if the place in memory we allocate to it was free or not.
