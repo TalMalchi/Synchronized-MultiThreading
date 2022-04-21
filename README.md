@@ -14,7 +14,7 @@ between number of clients and one server.
 In addition, in this project we were facing with some issues of how to let one client to ask from the server
 one action from the action that standart stack have (PUSH , POP , TOP) without other client will interupt to his action.  
 ///Each action is critical section in the code,//// and this is where the Mutex takes place.  
-Each time one Client is asking from the server some action, we use Mutex lock and unlock and in that way we ensure that no other client will interupt to his action.
+Each time one Client is asking from the server some action, we use Mutex lock and in that way we ensure that no other client will interupt to his action.
 
 We were implemnted commends such as:
 * PUSH - insert to our stack new string
