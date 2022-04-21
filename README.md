@@ -37,7 +37,7 @@ case which more than one client trying to reach to the same function.
 In our client class we use most of our code from Ex3 and made the necessary changes in aim to 
 adjust our code to this assigment.
 First of all, in this class we created our client socket using all the known commends (create socket ,connect and send)
-and when the client want from the server an action //For each action,נראלי אפשר לכתוב את זה במקום מה שכתבת בהתחלה//, the client will send one of the following messages (PUSH, POP, TOP) to the server, 
+and when the client want from the server an action //For each action,נראלי אפשר לכתוב את זה במקום מה שכתבת אחרי האנד//, the client will send one of the following messages (PUSH, POP, TOP) to the server, 
 If the commend is PUSH so the client also send the string he wants to add.
 
 
