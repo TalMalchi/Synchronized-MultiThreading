@@ -22,9 +22,9 @@ using namespace std;
 
 #define BACKLOG 10	 // how many pending connections queue will hold
 
-stack <string> ss;
-	pthread_mutex_t mutex;
-	int numbytes;
+stack <string> ss; //new stack
+pthread_mutex_t mutex; //lock for critical sections
+int numbytes;
 	
 
 void sigchld_handler(int s)
@@ -40,8 +40,6 @@ void sigchld_handler(int s)
 }
 
 
-
-
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
 {
@@ -52,24 +50,23 @@ void *get_in_addr(struct sockaddr *sa)
 	return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
+/*
+Each client connect to the server with new Thread. 
+This function recvie message from the Client, and deals with it.
+In each action -PUSH, POP, TOP- we used "pthread mutex" to lock (and unlock at the end) 
+the critical section in the code.
+In this way we ensure that one client can "chage" the stack each time.
+*/
+
 void *send_function(void *ptr){
-		char buffer[1024];
-    
-        // int sockfd= malloc(sizeof(((int*)ptr)));   
+		char buffer[1024]; 
         int sockfd = *((int*)ptr);
-
-
-        // if(send(sockfd, "Hello, world!", 13, 0) == -1){
-        //         printf("im here\n");
-        //         perror("send");
-        //         exit(1);
-        // }
 
 	string line, cmd, data;
 	while(true){
 		try{
-		//sleep(10);
 		memset(buffer,0,1024);
+		//get msg from the Client
         if ((numbytes = recv(sockfd, buffer, sizeof(buffer), 0)) == -1) {
 	    cout << "fail in recieve" << endl;
 		perror("recv");
@@ -77,48 +74,47 @@ void *send_function(void *ptr){
 		
 	buffer[numbytes] = '\0';
 	printf("Server: received '%s'\n",buffer);
-		}	
+	}	
 	line = buffer;
-	cmd= line.substr(0, line.find_first_of(" "));
-
+	cmd= line.substr(0, line.find_first_of(" ")); //save the action
 	if (cmd.size() < line.size())
         {
-            // rest line is data from the user
+            //rest line is data for spesific cmd
             data = line.substr(line.find_first_of(" ") + 1);
         }
-	//memcpy((void*)cmd, buf, strlen(buf));
-		
+	//push Client's data to the stack	
 	if (cmd== "PUSH")
 	{
-
 		pthread_mutex_lock(&mutex);
 		cout<< "Data to Push: " << data <<endl;
 		cout<< "Inside Push Server.cpp"<<endl;
-		ss.push(data);
+		ss.push(data); 
 		pthread_mutex_unlock(&mutex);
 
 		
 	}
+	//pop the last string from the stack
 	else if (cmd== "POP"){
 		pthread_mutex_lock(&mutex);
 		cout<< "Inside Pop Server.cpp"<<endl;
-		if(!ss.empty()){
-			ss.pop();
+		if(!ss.empty()){ //check that the stack doesnt empty
+			ss.pop(); 
 		}
 		else if(ss.empty()){
 			cout<< "Error- Stack is empty!"<<endl;
-			//break;
 		}
 		pthread_mutex_unlock(&mutex);
 
 	}
+	//Send to the CLient the last data on the stack
 	else if (cmd== "TOP"){
 		string empty_msg= "Error- Stack is empty!" ;
 		pthread_mutex_lock(&mutex);
 		cout<< "Inside Top Server.cpp"<<endl;
-		if(ss.empty()){
+		if(ss.empty()){ //The client will get a msg if the stack is empty
 			cout<< empty_msg <<endl;
 			try{
+			//send to Client empty_message
 			if(send(sockfd, empty_msg.c_str(), empty_msg.size()+1, 0) == -1){        
 					perror("send");
 					exit(1);
@@ -136,6 +132,7 @@ void *send_function(void *ptr){
 		top_msg= ss.top();	
 		printf("TOP_MSG: '%s'\n" ,top_msg.c_str());	
 		try{
+			//send to the Client the data on top of the stack
 			if(send(sockfd, top_msg.c_str(), top_msg.size()+1, 0) == -1){        
 					perror("send");
 					exit(1);
@@ -152,7 +149,6 @@ void *send_function(void *ptr){
 	catch(exception& e){
 		cout<<"exception: didnt recieve msg"<<endl;
 	}
-        //close(sockfd) ;     
 	
 }
 }
@@ -168,7 +164,6 @@ int main(void)
     
 	char s[INET6_ADDRSTRLEN];
 	int rv;
-    //stack_mutex <string> check;
 	
 
 	memset(&hints, 0, sizeof hints);
@@ -228,6 +223,7 @@ int main(void)
 
 	while(true) {  // main accept() loop
 		sin_size = sizeof their_addr;
+		//get new connection for Client
 		new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
 		if (new_fd == -1) {
 			perror("accept");
@@ -239,23 +235,9 @@ int main(void)
 			s, sizeof s);
 		printf("server: got connection from %s\n", s);
 	
-	
-
-
-
-
-		// if (!fork()) { // this is the child process
-		// 	close(sockfd); // child doesn't need the listener
-		// 	if (send(new_fd, "Hello, world!", 13, 0) == -1)
-		// 		perror("send");
-		// 	close(new_fd);
-		// 	exit(0);
-		// }
-		//signal(SIGINT,siginit_handler);
+	//Each Client connect to the Server woth new thread
 		pthread_t thread;
        pthread_create(&thread, NULL,send_function, (void *)&new_fd);
-
-		//close(new_fd);  // parent doesn't need this
 		
 }
 return 0;
