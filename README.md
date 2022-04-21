@@ -7,13 +7,11 @@
 In this assigment we asked to build our own stack using MUTEX and multiThreading, we wrote this assigment in the C++ language.
 
 ## Main goal of this project
-The main goal of this project is deep understanding about the //synchronized// multiThreading world and communication
+The main goal of this project is deep understanding about the synchronized multiThreading world and communication
 between number of clients and one server.  
-  ///// In addition, in this project we were facing with some issues of how to let few Client preform action in parallel.  
- Each Client ask from the server one of the standard stack's actions (PUSH , POP , TOP) -without interupt of other client.////////       בעיני להחליף את שתי השורות שמתחת במה שכתבתי  
-In addition, in this project we were facing with some issues of how to let one client to ask from the server
-one action from the action that standart stack have (PUSH , POP , TOP) without other client will interupt to his action.  
-///Each action is critical section in the code,//// and this is where the Mutex takes place.  
+In addition, in this project we were facing with some issues of how to let few Client preform action in parallel.  
+ Each Client ask from the server one of the standard stack's actions (PUSH , POP , TOP) -without interupt of other client.    
+Each action is critical section in the code, and this is where the Mutex takes place.  
 Each time one Client is asking from the server some action, we use Mutex lock and in that way we ensure that no other client will interupt to his action.
 
 We were implemnted commends such as:
@@ -37,24 +35,23 @@ case which more than one client trying to reach to the same function.
 In our client class we use most of our code from Ex3 and made the necessary changes in aim to 
 adjust our code to this assigment.
 First of all, in this class we created our client socket using all the known commends (create socket ,connect and send)
-and when the client want from the server an action //For each action,נראלי אפשר לכתוב את זה במקום מה שכתבת אחרי האנד//, the client will send one of the following messages (PUSH, POP, TOP) to the server, 
+and For each action, the client will send one of the following messages (PUSH, POP, TOP) to the server, 
 If the commend is PUSH so the client also send the string he wants to add.
 
 
 ## Explanation about the Stack class:
 
-//We built node struct in order to implement our Stack Class.  
-These struct containf 4 field://////////         נראלי להוסיף את זה 
+We built node struct in order to implement our Stack Class.  
+These struct containf 4 field: 
      
-     
-   In our node stuct the are 4 fields:
+    
 * T data - which store the data inside the node
 * size_t size - which store the size of our node
 * bool is_free - a boolean variable that check if the place in memory we allocate to it was free or not.
 * node * next - pointer to the next node in our stack.
 * 
 
-//Stack class contains main 3 methods: //////////////   
+Stack class contains main 3 methods:    
 In stack class there are the main three function of stack:
 * PUSH
 * POP
