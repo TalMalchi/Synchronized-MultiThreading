@@ -16,8 +16,6 @@ Server.o: Server.cpp
 	g++ -c Server.cpp -lpthread 
 
 
-.PHONY: clean Scheck Ccheck 
-
 
 clean:
 	rm -f *.o Server Client

@@ -56,7 +56,7 @@ public:
       cout << "Null pointer has been returned" << endl;
     }
 
-    cout << " inside push-stack" << endl; // self-checking
+    cout << "inside push-stack" << endl; // self-checking
     node *temp = new node;                // create a new node
     temp->data = new_data;                // assign the data to the new node
     temp->next = head;                    // assign the next node to the head node
@@ -69,7 +69,7 @@ public:
   void pop()
   {
 
-    cout << " inside pop-stack" << endl; // self-checking
+    cout << "inside pop-stack" << endl; // self-checking
     if (head != NULL)
     {
       node *temp = head; // create a new node
@@ -111,19 +111,19 @@ public:
   }
 
   // this function updates all node is variables
-  node *update_node(node *nnode, size_t size, void *memory_block)
+  node *update_node(node *new_node, size_t size, void *memory_block)
   {
-    nnode = (node *)memory_block;
-    nnode->size = size;
-    nnode->is_free = false; // assign the status of the node to false
-    nnode->next = NULL;
+    new_node = (node *)memory_block;
+    new_node->size = size;
+    new_node->is_free = false; // assign the status of the node to false
+    new_node->next = NULL;
     if (!start) // if the start node is NULL
-      start = nnode;
+      start = new_node;
     if (end1) // if the end node is not NULL
-      end1->next = nnode;
-    end1 = nnode;
+      end1->next = new_node;
+    end1 = new_node;
     pthread_mutex_unlock(&lock); // unlock the mutex
-    return (nnode);
+    return (new_node);
   }
 
   // this function allocates memory for the new node using the previous functions
@@ -142,7 +142,8 @@ public:
       pthread_mutex_unlock(&lock);   // unlock the mutex
       return (void *)(new_node + 1); // return pointer to the node
     }
-    memory_block = sbrk((sizeof(node) + size)); // allocate memory using sbrk function
+    memory_block = sbrk(size);
+    //memory_block = sbrk((sizeof(node) + size)); // allocate memory using sbrk function
     if (memory_block == (void *)-1)
     { // if the allocation fails
       pthread_mutex_unlock(&lock);
@@ -164,30 +165,21 @@ public:
   {
     node *new_node;
     void *new_brk;
-
     if (!ptr)
-
       return;
-
     pthread_mutex_lock(&lock); // lock the mutex
-
     new_node = (node *)ptr - 1;
-
     new_brk = sbrk(0); // get the current sbrk val
                        // if the node is the last node
     if ((char *)ptr + new_node->size == new_brk)
     {
-
       if (start == end1)
       {
-
         start = NULL;
-
         end1 = NULL;
       }
       else
       {
-
         delete_pointers(); // delete the pointers using the delete_pointers function
       }
 
@@ -195,10 +187,8 @@ public:
     }
     else
     {
-
       new_node->is_free = true; // assign the status of the node to true
     }
-
     pthread_mutex_unlock(&lock);
   }
 
