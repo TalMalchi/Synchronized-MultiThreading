@@ -1,21 +1,24 @@
 
-client: Client
 
-server: Server
+client: client
 
-Client: Client.o
-	g++ -o client Client.o 
+server: server
 
-Server: Server.o
-	g++ -o server Server.o -lpthread
+client: client.o
+	g++ -o client client.o 
 
-Client.o: Client.cpp
-	g++ -c Client.cpp  
+server: server.o
+	g++ -o server server.o -lpthread
 
-Server.o: Server.cpp
-	g++ -c Server.cpp -lpthread 
+client.o: client.cpp
+	g++ -c client.cpp  
 
+server.o: server.cpp
+	g++ -c server.cpp -lpthread 
+
+
+.PHONY: clean Scheck Ccheck 
 
 
 clean:
-	rm -f *.o Server Client
+	rm -f *.o server client
