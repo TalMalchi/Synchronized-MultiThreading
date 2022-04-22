@@ -194,22 +194,15 @@ public:
 
   // this function deletes the pointers
   void delete_pointers(void)
-
   {
-
     node *buff = start;
-
     while (buff)
     {
-
       if (buff->next == end1)
       {
-
         buff->next = NULL;
-
         end1 = buff;
       }
-
       buff = buff->next;
     }
   }
