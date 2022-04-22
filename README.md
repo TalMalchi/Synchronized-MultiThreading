@@ -93,7 +93,7 @@ we use this function when we perform the "POP" operation.
 
 
 ## How to run ?  
-Open two terminal. In the first one `make server` and then `./server`   
+Open two terminal. In the first one write `make server` and then `./server`   
 In the second terminal write write `make client`  and then `./client 127.0.0.1`           
 In order to clean all the files write `make clean`
 
